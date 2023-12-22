@@ -1,3 +1,5 @@
+import { connection } from "websocket";
+
 interface User {
   name: string;
   id: string;
@@ -12,7 +14,7 @@ export class UserManager {
   constructor() {
     this.users = new Map<string, Room>();
   }
-  addUser(name: string, userId: string, roomId: string, socket: WebSocket) {
+  addUser(name: string, userId: string, roomId: string, socket: connection) {
     if (!this.users.get(roomId)) {
       this.users.set(roomId, {
         users: [],
@@ -24,9 +26,13 @@ export class UserManager {
     });
   }
   removeUser(roomId: string, userId: string) {
-    const users = this.room.get(roomId)?.users;
+    const users = this.rooms.get(roomId)?.users;
     if (users) {
-      users.filter(({ id }) => userId);
+      users.filter(({ id }) => id !== userId);
     }
+  }
+  getUser(roomId: string, userId: string): User | null {
+    const user = this.rooms.get(roomId)?.users.find(({ id }) => id === userId);
+    return user ?? null;
   }
 }

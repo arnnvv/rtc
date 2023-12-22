@@ -6,18 +6,18 @@ export enum SupportedMessages {
   UpVoteMessage = "UPVOTE_MESSAGE",
 }
 
-type InommingMEssages =
+export type IncommingMessages =
   | {
       type: SupportedMessages.JoinRoom;
       payload: InitMessageType;
     }
   | {
       type: SupportedMessages.SendMessage;
-      payload: InitMessageType;
+      payload: UserMessagesType;
     }
   | {
       type: SupportedMessages.UpVoteMessage;
-      payload: InitMessageType;
+      payload: UpVotedMessagesType;
     };
 
 export const initMessages = zod.object({
