@@ -1,6 +1,13 @@
 #!/usr/bin/env Node
 import { server as WebSocketServer } from "websocket";
 import http from "http";
+import { UserManager } from "./UserManager";
+import {
+  InitMessageType,
+  SupportedMessages,
+  UpVotedMessagesType,
+  UserMessagesType,
+} from "./messages";
 
 const server = http.createServer(function (request: any, response: any) {
   console.log(new Date() + " Received request for " + request.url);
@@ -34,8 +41,11 @@ wsServer.on("request", function (request) {
   console.log(new Date() + " Connection accepted.");
   connection.on("message", function (message) {
     if (message.type === "utf8") {
-      console.log("Received Message: " + message.utf8Data);
-      connection.sendUTF(message.utf8Data);
+      try {
+        messageHandler(JSON.parse(message.utf8Data));
+      } catch (err) {}
+      //console.log("Received Message: " + message.utf8Data);
+      //connection.sendUTF(message.utf8Data);
     } else if (message.type === "binary") {
       console.log(
         "Received Binary Message of " + message.binaryData.length + " bytes",
@@ -49,3 +59,8 @@ wsServer.on("request", function (request) {
     );
   });
 });
+
+function messageHandler(
+  type: SupportedMessages,
+  message: InitMessageType | UpVotedMessagesType | UserMessagesType,
+) {}
