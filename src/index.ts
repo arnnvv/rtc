@@ -1,17 +1,17 @@
 #!/usr/bin/env Node
-import { server } from "websocket";
-var http = require("http");
+import { server as WebSocketServer } from "websocket";
+import http from "http";
 
-var httpServer = http.createServer(function (request: any, response: any) {
+var server = http.createServer(function (request: any, response: any) {
   console.log(new Date() + " Received request for " + request.url);
   response.writeHead(404);
   response.end();
 });
-httpServer.listen(8080, function () {
+server.listen(8080, function () {
   console.log(new Date() + " Server is listening on port 8080");
 });
 
-wsServer = new WebSocketServer({
+const wsServer = new WebSocketServer({
   httpServer: server,
   // You should not use autoAcceptConnections for production
   // applications, as it defeats all standard cross-origin protection
@@ -21,7 +21,7 @@ wsServer = new WebSocketServer({
   autoAcceptConnections: false,
 });
 
-function originIsAllowed(origin) {
+function originIsAllowed(origin: string) {
   // put logic here to detect whether the specified origin is allowed.
   return true;
 }
