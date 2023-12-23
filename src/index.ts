@@ -21,12 +21,15 @@ const server = http.createServer(function (request: any, response: any) {
   response.writeHead(404);
   response.end();
 });
-server.listen(8080, function () {
-  console.log(new Date() + " Server is listening on port 8080");
-});
+
+server;
 
 const userManager = new UserManager();
 const store = new InMemoryStore();
+
+server.listen(8080, function () {
+  console.log(new Date() + " Server is listening on port 8080");
+});
 
 const wsServer = new WebSocketServer({
   httpServer: server,
@@ -51,7 +54,7 @@ wsServer.on("request", function (request) {
   connection.on("message", function (message) {
     if (message.type === "utf8") {
       try {
-        messageHandler(ws, JSON.parse(message.utf8Data));
+        messageHandler(connection, JSON.parse(message.utf8Data));
       } catch (err) {}
       //console.log("Received Message: " + message.utf8Data);
       //connection.sendUTF(message.utf8Data);
