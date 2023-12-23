@@ -2,19 +2,16 @@
 import { server as WebSocketServer, connection } from "websocket";
 import http from "http";
 import { UserManager } from "./UserManager";
-import {
-  IncommingMessages,
-  InitMessageType,
-  SupportedMessages,
-  UpVotedMessagesType,
-  UserMessagesType,
-} from "./messages";
 import { InMemoryStore } from "./store/InMemoryStore";
 import { retryDelay } from "@trpc/client/dist/internals/retryDelay";
 import {
   OutgoingMessage,
   SupportedMessage as OutgoingSupportedMessages,
 } from "./messages/outgoingMessages";
+import {
+  IncommingMessages,
+  SupportedMessages,
+} from "./messages/incomingMessages";
 
 const server = http.createServer(function (request: any, response: any) {
   console.log(new Date() + " Received request for " + request.url);
@@ -105,7 +102,7 @@ function messageHandler(ws: connection, message: IncommingMessages) {
 
   if (message.type === SupportedMessages.UpVoteMessage) {
     const payload = message.payload;
-    const chat = store.upVote(payload.userId, payload.roomId, payload.chatId);
+    const chat = store.upvote(payload.userId, payload.roomId, payload.chatId);
     if (!chat) return;
     const OutgoingPayload: OutgoingMessage = {
       type: OutgoingSupportedMessages.UpdateChat,
