@@ -38,6 +38,7 @@ function originIsAllowed(origin: string) {
 }
 
 wsServer.on("request", function (request) {
+  console.log("inside connect");
   if (!originIsAllowed(request.origin)) {
     request.reject();
     console.log(

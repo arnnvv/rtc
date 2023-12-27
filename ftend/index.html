@@ -1,0 +1,11 @@
+<head> </head>
+<body>
+  <script>
+    const ws = new WebSocket("ws://localhost:8080", "echo-protocol");
+    const userId = Math.floor(Math.random() * 10000);
+    ws.onopen = function () {
+      alert("connected");
+    };
+  </script>
+  Hello world
+</body>
