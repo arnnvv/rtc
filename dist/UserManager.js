@@ -23,6 +23,7 @@ class UserManager {
     }
     removeUser(roomId, userId) {
         var _a;
+        console.log("removed user");
         const users = (_a = this.rooms.get(roomId)) === null || _a === void 0 ? void 0 : _a.users;
         if (users) {
             users.filter(({ id }) => id !== userId);
