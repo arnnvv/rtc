@@ -6,5 +6,6 @@ function createConnection() {
   sndBtn.addEventListener("click", (e) => {
     const message = msgInput.value;
     console.log(message);
+    socket.emit("message", message);
   });
 }

@@ -8,7 +8,9 @@ const port: number = 9000;
 const io = new Server(server);
 
 io.on("connection", (socket) => {
-  console.log(`Socket Connected: ${socket.id}`);
+  socket.on("message", (message) => {
+    console.log("A new user message:", message);
+  });
 });
 
 app.use(express.static("./public/"));
