@@ -1,8 +1,9 @@
 function createConnection() {
   const socket = io();
-  const sndBtn = document.getElementById("sndBtn");
-  const msgInput = document.getElementById("message");
+  const sendBtn = document.querySelector("form button");
+  const msgInput = document.getElementById("input");
   const allMessages = document.getElementById("messages");
+
   socket.on("message", (message) => {
     console.log(message);
     const p = document.createElement("p");
@@ -10,7 +11,8 @@ function createConnection() {
     allMessages.appendChild(p);
   });
 
-  sndBtn.addEventListener("click", (e) => {
+  sendBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     const message = msgInput.value;
     console.log(message);
     socket.emit("message", message);

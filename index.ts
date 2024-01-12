@@ -4,7 +4,7 @@ import http from "http";
 
 const app = express();
 const server = http.createServer(app);
-const port: number = 9000;
+const port: number = 3000;
 const io = new Server(server);
 
 io.on("connection", (socket) => {
