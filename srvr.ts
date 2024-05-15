@@ -2,15 +2,40 @@ import WebSocket, { WebSocketServer } from "ws";
 
 const port: number = 8080;
 const ws = new WebSocketServer({ port });
-let senerSocket: null | WebSocket = null;
+let senderSocket: null | WebSocket = null;
 let receiverSocket: null | WebSocket = null;
 
 ws.on("connection", (wss: WebSocket) => {
   wss.on("error", console.error);
   wss.on("message", (data: any) => {
     const message = JSON.parse(data);
-    if (message.type === "sender") senerSocket = wss;
+    if (message.type === "sender") senderSocket = wss;
     else if (message.type === "receiver") receiverSocket = wss;
+    else if (message.type === "create-offer") {
+      if (wss! === senderSocket) return;
+      receiverSocket?.send(
+        JSON.stringify({ type: "create-offer", sdp: message.sdp }),
+      );
+    } else if (message.type === "create-answer") {
+      if (wss! === receiverSocket) return;
+      senderSocket?.send(
+        JSON.stringify({ type: "create-answer", sdp: message.sdp }),
+      );
+    } else if (message.type === "ice-candidate") {
+      if (wss === senderSocket)
+        receiverSocket?.send(
+          JSON.stringify({
+            type: "ice-candidate",
+            candidate: message.candidate,
+          }),
+        );
+      else if (wss === receiverSocket)
+        senderSocket?.send(
+          JSON.stringify({
+            type: "ice-candidate",
+            candidate: message.candidate,
+          }),
+        );
+    }
   });
-  wss.send("hello");
 });
