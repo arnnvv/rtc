@@ -14,22 +14,42 @@ export const Sender = () => {
     <div>
       Sender
       <button
-        onClick={async () => {
+        onClick={async (): Promise<void> => {
           if (!socket) return;
-          //craete an offer-localDes
           const ps = new RTCPeerConnection();
-          const offer = await ps.createOffer();
-          await ps.setLocalDescription(offer);
-          //send offer via signaling srvr to receiver
-          socket?.send(JSON.stringify({ type: "create-offer", sdp: offer }));
+          //craete an offer-localDes (will be needed multiple times not just once)
+          ps.onnegotiationneeded = async () => {
+            const offer = await ps.createOffer();
+            await ps.setLocalDescription(offer);
+            //send offer via signaling srvr to receiver
+            socket?.send(JSON.stringify({ type: "create-offer", sdp: offer }));
+          };
+
+          ps.onicecandidate = (event) => {
+            if (event.candidate) {
+              socket?.send(
+                JSON.stringify({
+                  type: "ice-candidate",
+                  candidate: event.candidate,
+                }),
+              );
+            }
+          };
 
           //geting answer fron receiver
           socket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
             if (data.type === "create-answer")
               ps.setRemoteDescription(data.sdp);
+            else if (data.type === "ice-candidate")
+              ps.addIceCandidate(data.candidate);
           };
           //connection established now we don't need Server;
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false,
+          });
+          ps.addTrack(stream.getVideoTracks()[0]);
         }}
       >
         Send Video
