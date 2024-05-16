@@ -4,6 +4,7 @@ export const Sender = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8080");
+    setSocket(socket);
     socket.onopen = () => {
       socket.send(JSON.stringify({ type: "sender" }));
     };
@@ -20,9 +21,7 @@ export const Sender = () => {
           const offer = await ps.createOffer();
           await ps.setLocalDescription(offer);
           //send offer via signaling srvr to receiver
-          socket?.send(
-            JSON.stringify({ type: "create-offer", sdp: ps.localDescription }),
-          );
+          socket?.send(JSON.stringify({ type: "create-offer", sdp: offer }));
 
           //geting answer fron receiver
           socket.onmessage = async (event) => {
@@ -30,7 +29,7 @@ export const Sender = () => {
             if (data.type === "create-answer")
               ps.setRemoteDescription(data.sdp);
           };
-          //connection established now we don;
+          //connection established now we don't need Server;
         }}
       >
         Send Video

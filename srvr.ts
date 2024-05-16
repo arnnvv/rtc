@@ -16,17 +16,17 @@ ws.on("connection", (wss: WebSocket) => {
       receiverSocket = wss;
       console.log("receiver set");
     } else if (message.type === "create-offer") {
-      if (wss! === senderSocket) return;
-      console.log("ofefr receibved");
+      if (wss !== senderSocket) return;
       receiverSocket?.send(
         JSON.stringify({ type: "create-offer", sdp: message.sdp }),
       );
+      console.log("offer received");
     } else if (message.type === "create-answer") {
-      if (wss! === receiverSocket) return;
-      console.log("answer receibved");
+      if (wss !== receiverSocket) return;
       senderSocket?.send(
         JSON.stringify({ type: "create-answer", sdp: message.sdp }),
       );
+      console.log("answer received");
     } else if (message.type === "ice-candidate") {
       if (wss === senderSocket)
         receiverSocket?.send(
