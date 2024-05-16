@@ -1,15 +1,24 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 export const Receiver = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
   useEffect(() => {
     const socket: WebSocket = new WebSocket("ws://localhost:8080");
+
     socket.onopen = () => {
       socket.send(JSON.stringify({ type: "receiver" }));
     };
 
+    const video = document.createElement("video");
+    document.body.appendChild(video);
+
     const ps = new RTCPeerConnection();
+
+    ps.ontrack = (event) => {
+      console.log(event);
+      video.srcObject = new MediaStream([event.track]);
+      video.play();
+    };
+
     //getting offer from sender via server
     socket.onmessage = async (event: MessageEvent) => {
       const message = JSON.parse(event.data);
@@ -32,22 +41,11 @@ export const Receiver = () => {
             );
           }
         };
-        ps.ontrack = (event) => {
-          console.log(event);
-          if (videoRef.current) {
-            videoRef.current.srcObject = new MediaStream([event.track]);
-          }
-        };
       } else if (message.type === "ice-candidate") {
         ps.addIceCandidate(message.candidate);
       }
     };
   }, []);
 
-  return (
-    <div>
-      receiver
-      <video ref={videoRef}></video>
-    </div>
-  );
+  return <div>Receiving</div>;
 };
