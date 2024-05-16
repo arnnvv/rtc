@@ -9,15 +9,21 @@ ws.on("connection", (wss: WebSocket) => {
   wss.on("error", console.error);
   wss.on("message", (data: any) => {
     const message = JSON.parse(data);
-    if (message.type === "sender") senderSocket = wss;
-    else if (message.type === "receiver") receiverSocket = wss;
-    else if (message.type === "create-offer") {
+    if (message.type === "sender") {
+      senderSocket = wss;
+      console.log("sender set");
+    } else if (message.type === "receiver") {
+      receiverSocket = wss;
+      console.log("receiver set");
+    } else if (message.type === "create-offer") {
       if (wss! === senderSocket) return;
+      console.log("ofefr receibved");
       receiverSocket?.send(
         JSON.stringify({ type: "create-offer", sdp: message.sdp }),
       );
     } else if (message.type === "create-answer") {
       if (wss! === receiverSocket) return;
+      console.log("answer receibved");
       senderSocket?.send(
         JSON.stringify({ type: "create-answer", sdp: message.sdp }),
       );

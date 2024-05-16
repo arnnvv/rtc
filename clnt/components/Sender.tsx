@@ -8,15 +8,29 @@ export const Sender = () => {
       socket.send(JSON.stringify({ type: "sender" }));
     };
   }, []);
+
   return (
     <div>
       Sender
       <button
         onClick={async () => {
-          //craete an offer
+          if (!socket) return;
+          //craete an offer-localDes
           const ps = new RTCPeerConnection();
           const offer = await ps.createOffer();
           await ps.setLocalDescription(offer);
+          //send offer via signaling srvr to receiver
+          socket?.send(
+            JSON.stringify({ type: "create-offer", sdp: ps.localDescription }),
+          );
+
+          //geting answer fron receiver
+          socket.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === "create-answer")
+              ps.setRemoteDescription(data.sdp);
+          };
+          //connection established now we don;
         }}
       >
         Send Video
